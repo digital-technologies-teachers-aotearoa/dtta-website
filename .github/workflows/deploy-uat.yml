@@ -23,13 +23,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Read tag (django key from YAML)
+      - name: Read tag (ams key from YAML)
         id: tag
         run: |
           set -euo pipefail
-          tag=$(yq -r '.django' environments/uat.yml)
+          tag=$(yq -r '.ams' environments/uat.yml)
           if [ -z "$tag" ] || [ "$tag" = "null" ]; then
-            echo "django key missing or empty in environments/uat.yml" >&2
+            echo "ams key missing or empty in environments/uat.yml" >&2
             exit 1
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
@@ -62,4 +62,4 @@ jobs:
 
       - name: Summary
         run: |
-          echo "Deployed UAT tag: ${{ steps.tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed UAT AMS: ${{ steps.tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
