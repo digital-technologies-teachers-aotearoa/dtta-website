@@ -19,12 +19,12 @@ Production will be added a later stage.
 
 The following keys are supported:
 
-- `django` - Value corresponds to a tag for an available [AMS Docker image](https://github.com/digital-technologies-teachers-aotearoa/ams/pkgs/container/ams-django).
+- `ams` - Value corresponds to a tag for an available [AMS Docker image](https://github.com/digital-technologies-teachers-aotearoa/ams/pkgs/container/ams-django).
 
 ##### Example environment file
 
 ```yaml
-django: 1.7.3
+ams: 1.7.3
 ```
 
 Additional keys may be added at a later stage for additional services, such as Discourse.
