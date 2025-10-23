@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - 'environments/uat.yml'
+      - '.github/workflows/deploy-uat.yml'
 
 permissions:
   contents: read
@@ -59,6 +60,7 @@ jobs:
           print_deploy_logs: true
         env:
           IMAGE_TAG_DJANGO: ${{ steps.tag.outputs.tag }}
+          IMAGE_TAG_JOB-DEPLOY: ${{ steps.tag.outputs.tag }}
 
       - name: Summary
         run: |
