@@ -5,19 +5,19 @@ This repository stores any custom configuration required, and is also used for d
 
 ## Environments and deployments
 
-Environments are configured with a YAML file within the `environments/` directory.
+Environments are configured with configuration files within an `environments/` directory.
 
 ### Environments
 
 The following environments are supported:
 
-- UAT (User acceptance testing) - `uat.yml`
+- UAT (User acceptance testing) - `environments/uat/`
 
 Production will be added a later stage.
 
 ### Environment file configuration
 
-The following keys are supported:
+The following keys are supported within the `versions.yml` file:
 
 - `ams` - Value corresponds to a tag for an available [AMS Docker image](https://github.com/digital-technologies-teachers-aotearoa/ams/pkgs/container/ams-django).
 
@@ -48,4 +48,8 @@ Each environment requires the following:
 
 AMS instances require configuration such as expected environment variables, see [AMS Deployment Documentation](https://digital-technologies-teachers-aotearoa.github.io/ams/developer/deployment/#production-environment).
 
-These are currently setup manually, though could be moved to an infrastructure as code setup if required.
+The deployment workflow sets up the infrastructure required using `app.yml` files during the deployment.
+These files define the required infrastructure, configuration values, environment variables, etc.
+Required secrets are loaded from a GitHub environment to populate the required environment variables (encrypted values are entered directly in Digital Ocean, then the corresponding encrypted value is copied from the online `app.yaml` and entered into the repository file).
+
+These can be deployed or adjusted manually on the Digital Ocean website if required, however a new code deployment would override changes made directly through the Digital Ocean website.

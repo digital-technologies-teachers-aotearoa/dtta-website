@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'environments/uat.yml'
+      - 'environments/uat/*'
       - '.github/workflows/deploy-uat.yml'
 
 permissions:
@@ -19,6 +19,7 @@ concurrency:
 jobs:
   deploy-uat:
     name: Deploy image to UAT
+    environment: UAT
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,9 +29,9 @@ jobs:
         id: tag
         run: |
           set -euo pipefail
-          tag=$(yq -r '.ams' environments/uat.yml)
+          tag=$(yq -r '.ams' environments/uat/versions.yml)
           if [ -z "$tag" ] || [ "$tag" = "null" ]; then
-            echo "ams key missing or empty in environments/uat.yml" >&2
+            echo "ams key missing or empty in environments/uat/versions.yml" >&2
             exit 1
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
@@ -55,12 +56,22 @@ jobs:
         uses: digitalocean/app_action/deploy@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_DEPLOY_TOKEN }}
-          app_name: dtta-uat-website
-          print_build_logs: true
-          print_deploy_logs: true
+          project_id: dtta-uat
+          app_spec_location: environments/uat/app.yml
         env:
-          IMAGE_TAG_DJANGO: ${{ steps.tag.outputs.tag }}
-          IMAGE_TAG_JOB-DEPLOY: ${{ steps.tag.outputs.tag }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_ADMIN_URL: ${{ secrets.DJANGO_ADMIN_URL }}
+          DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
+          MAILGUN_API_URL: ${{ secrets.MAILGUN_API_URL }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          AMS_BILLING_SERVICE_CLASS: ${{ secrets.AMS_BILLING_SERVICE_CLASS }}
+          AMS_BILLING_EMAIL_WHITELIST_REGEX: ${{ secrets.AMS_BILLING_EMAIL_WHITELIST_REGEX }}
+          DISCOURSE_REDIRECT_DOMAIN: ${{ secrets.DISCOURSE_REDIRECT_DOMAIN }}
+          DISCOURSE_CONNECT_SECRET: ${{ secrets.DISCOURSE_CONNECT_SECRET }}
+          registry_credentials: ${{ secrets.REGISTRY_CREDENTIALS }}
+          django_tag: ${{ steps.tag.outputs.tag }}
 
       - name: Summary
         run: |
