@@ -20,6 +20,9 @@ ingress:
           prefix: /
 jobs:
   - envs:
+      - key: SITE_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SITE_DOMAIN}
       - key: POSTGRES_HOST
         scope: RUN_AND_BUILD_TIME
         value: ${db.HOSTNAME}
@@ -124,6 +127,9 @@ jobs:
 region: syd
 services:
   - envs:
+      - key: SITE_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SITE_DOMAIN}
       - key: POSTGRES_HOST
         scope: RUN_AND_BUILD_TIME
         value: ${db.HOSTNAME}
