@@ -17,17 +17,20 @@ Production will be added a later stage.
 
 ### Environment file configuration
 
-The following keys are supported within the `versions.yml` file:
+The following keys are supported within the `config.yml` file:
 
 - `ams` - Value corresponds to a tag for an available [AMS Docker image](https://github.com/digital-technologies-teachers-aotearoa/ams/pkgs/container/ams-django).
 
 ##### Example environment file
 
 ```yaml
-ams: 1.7.3
+ams:
+  version: 1.0.0
+  envs:
+    AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: True
+    AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: True
+    AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL: False
 ```
-
-Additional keys may be added at a later stage for additional services, such as Discourse.
 
 ### GitHub configuration
 

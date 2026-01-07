@@ -25,16 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Read tag (ams key from YAML)
-        id: tag
+      - name: Read config from YAML
         run: |
           set -euo pipefail
-          tag=$(yq -r '.ams' environments/uat/versions.yml)
+          tag=$(yq -r '.ams.version' environments/uat/config.yml)
           if [ -z "$tag" ] || [ "$tag" = "null" ]; then
-            echo "ams key missing or empty in environments/uat/versions.yml" >&2
+            echo "ams.version key missing or empty in environments/uat/config.yml" >&2
             exit 1
           fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "AMS_TAG=$tag" >> "$GITHUB_ENV"
+          yq -r '.ams.envs | to_entries | .[] | "\(.key)=\(.value)"' environments/uat/config.yml >> "$GITHUB_ENV"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -46,7 +46,7 @@ jobs:
       - name: Validate image exists
         run: |
           set -euo pipefail
-          image="ghcr.io/digital-technologies-teachers-aotearoa/ams-django:${{ steps.tag.outputs.tag }}"
+          image="ghcr.io/digital-technologies-teachers-aotearoa/ams-django:${{ env.AMS_TAG }}"
           if ! docker pull "$image"; then
             echo "Image $image not found" >&2
             exit 1
@@ -61,9 +61,9 @@ jobs:
         env:
           AMS_BILLING_EMAIL_WHITELIST_REGEX: ${{ secrets.AMS_BILLING_EMAIL_WHITELIST_REGEX }}
           AMS_BILLING_SERVICE_CLASS: ${{ secrets.AMS_BILLING_SERVICE_CLASS }}
-          AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: True
-          AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: True
-          AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL: True
+          AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: ${{ env.AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS }}
+          AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: ${{ env.AMS_NOTIFY_STAFF_ORGANISATION_EVENTS }}
+          AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL: ${{ env.AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL }}
           DISCOURSE_CONNECT_SECRET: ${{ secrets.DISCOURSE_CONNECT_SECRET }}
           DISCOURSE_REDIRECT_DOMAIN: ${{ secrets.DISCOURSE_REDIRECT_DOMAIN }}
           DJANGO_ADMIN_URL: ${{ secrets.DJANGO_ADMIN_URL }}
@@ -81,7 +81,7 @@ jobs:
           DJANGO_MEDIA_PUBLIC_REGION_NAME: ${{ secrets.DJANGO_MEDIA_PUBLIC_REGION_NAME }}
           DJANGO_MEDIA_PUBLIC_SECRET_KEY: ${{ secrets.DJANGO_MEDIA_PUBLIC_SECRET_KEY }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          django_tag: ${{ steps.tag.outputs.tag }}
+          django_tag: ${{ env.AMS_TAG }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
           MAILGUN_API_URL: ${{ secrets.MAILGUN_API_URL }}
           MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
@@ -98,4 +98,4 @@ jobs:
 
       - name: Summary
         run: |
-          echo "Deployed UAT AMS: ${{ steps.tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed UAT AMS: ${{ env.AMS_TAG }}" >> $GITHUB_STEP_SUMMARY
