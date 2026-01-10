@@ -1,0 +1,101 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'environments/prod/*'
+      - '.github/workflows/deploy-prod.yml'
+
+permissions:
+  contents: read
+  packages: read
+  id-token: write
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy-prod:
+    name: Deploy image to Production
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Read config from YAML
+        run: |
+          set -euo pipefail
+          tag=$(yq -r '.ams.version' environments/prod/config.yml)
+          if [ -z "$tag" ] || [ "$tag" = "null" ]; then
+            echo "ams.version key missing or empty in environments/prod/config.yml" >&2
+            exit 1
+          fi
+          echo "AMS_TAG=$tag" >> "$GITHUB_ENV"
+          yq -r '.ams.envs | to_entries | .[] | "\(.key)=\(.value)"' environments/prod/config.yml >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate image exists
+        run: |
+          set -euo pipefail
+          image="ghcr.io/digital-technologies-teachers-aotearoa/ams-django:${{ env.AMS_TAG }}"
+          if ! docker pull "$image"; then
+            echo "Image $image not found" >&2
+            exit 1
+          fi
+
+      - name: Deploy to DigitalOcean App Platform (Production)
+        uses: digitalocean/app_action/deploy@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_DEPLOY_TOKEN }}
+          project_id: dtta-prod
+          app_spec_location: environments/prod/app.yml
+        env:
+          AMS_BILLING_EMAIL_WHITELIST_REGEX: ${{ secrets.AMS_BILLING_EMAIL_WHITELIST_REGEX }}
+          AMS_BILLING_SERVICE_CLASS: ${{ secrets.AMS_BILLING_SERVICE_CLASS }}
+          AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: ${{ env.AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS }}
+          AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: ${{ env.AMS_NOTIFY_STAFF_ORGANISATION_EVENTS }}
+          AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL: ${{ env.AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL }}
+          DISCOURSE_CONNECT_SECRET: ${{ secrets.DISCOURSE_CONNECT_SECRET }}
+          DISCOURSE_REDIRECT_DOMAIN: ${{ secrets.DISCOURSE_REDIRECT_DOMAIN }}
+          DJANGO_ADMIN_URL: ${{ secrets.DJANGO_ADMIN_URL }}
+          DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
+          DJANGO_DEFAULT_FROM_EMAIL: ${{ secrets.DJANGO_DEFAULT_FROM_EMAIL }}
+          DJANGO_EMAIL_SUBJECT_PREFIX: ${{ secrets.DJANGO_EMAIL_SUBJECT_PREFIX }}
+          DJANGO_MEDIA_PRIVATE_ACCESS_KEY: ${{ secrets.DJANGO_MEDIA_PRIVATE_ACCESS_KEY }}
+          DJANGO_MEDIA_PRIVATE_BUCKET_NAME: ${{ secrets.DJANGO_MEDIA_PRIVATE_BUCKET_NAME }}
+          DJANGO_MEDIA_PRIVATE_ENDPOINT_URL: ${{ secrets.DJANGO_MEDIA_PRIVATE_ENDPOINT_URL }}
+          DJANGO_MEDIA_PRIVATE_REGION_NAME: ${{ secrets.DJANGO_MEDIA_PRIVATE_REGION_NAME }}
+          DJANGO_MEDIA_PRIVATE_SECRET_KEY: ${{ secrets.DJANGO_MEDIA_PRIVATE_SECRET_KEY }}
+          DJANGO_MEDIA_PUBLIC_ACCESS_KEY: ${{ secrets.DJANGO_MEDIA_PUBLIC_ACCESS_KEY }}
+          DJANGO_MEDIA_PUBLIC_BUCKET_NAME: ${{ secrets.DJANGO_MEDIA_PUBLIC_BUCKET_NAME }}
+          DJANGO_MEDIA_PUBLIC_ENDPOINT_URL: ${{ secrets.DJANGO_MEDIA_PUBLIC_ENDPOINT_URL }}
+          DJANGO_MEDIA_PUBLIC_REGION_NAME: ${{ secrets.DJANGO_MEDIA_PUBLIC_REGION_NAME }}
+          DJANGO_MEDIA_PUBLIC_SECRET_KEY: ${{ secrets.DJANGO_MEDIA_PUBLIC_SECRET_KEY }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          django_tag: ${{ env.AMS_TAG }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_API_URL: ${{ secrets.MAILGUN_API_URL }}
+          MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
+          registry_credentials: ${{ secrets.REGISTRY_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+          XERO_ACCOUNT_CODE: ${{ secrets.XERO_ACCOUNT_CODE }}
+          XERO_AMOUNT_TYPE: ${{ secrets.XERO_AMOUNT_TYPE }}
+          XERO_CLIENT_ID: ${{ secrets.XERO_CLIENT_ID }}
+          XERO_CLIENT_SECRET: ${{ secrets.XERO_CLIENT_SECRET }}
+          XERO_CURRENCY_CODE: ${{ secrets.XERO_CURRENCY_CODE }}
+          XERO_TENANT_ID: ${{ secrets.XERO_TENANT_ID }}
+          XERO_WEBHOOK_KEY: ${{ secrets.XERO_WEBHOOK_KEY }}
+
+      - name: Summary
+        run: |
+          echo "Deployed Production AMS: ${{ env.AMS_TAG }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,457 @@
+name: dtta-prod-website
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+databases:
+  - cluster_name: db-postgresql
+    db_name: ams
+    db_user: django-app
+    engine: PG
+    name: db-postgresql
+    production: true
+    version: "18"
+domains:
+  - domain: prod.dtta.org.nz
+    type: PRIMARY
+features:
+  - buildpack-stack=ubuntu-22
+ingress:
+  rules:
+    - component:
+        name: django
+      match:
+        path:
+          prefix: /
+jobs:
+  - name: job-deploy
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb-fixed
+    kind: PRE_DEPLOY
+    run_command: python /app/manage.py deploy_steps
+    image:
+      tag: ${django_tag}
+      registry: digital-technologies-teachers-aotearoa
+      registry_credentials: ${registry_credentials}
+      registry_type: GHCR
+      repository: ams-django
+    envs:
+      - key: SITE_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SITE_DOMAIN}
+      - key: POSTGRES_HOST
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.HOSTNAME}
+      - key: POSTGRES_PORT
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PORT}
+      - key: POSTGRES_DB
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.DATABASE}
+      - key: POSTGRES_USER
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.USERNAME}
+      - key: POSTGRES_PASSWORD
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PASSWORD}
+      - key: DJANGO_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_SECRET_KEY}
+      - key: DJANGO_ADMIN_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ADMIN_URL}
+      - key: DJANGO_ALLOWED_HOSTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ALLOWED_HOSTS}
+      - key: MAILGUN_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_KEY}
+      - key: MAILGUN_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_DOMAIN}
+      - key: MAILGUN_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_URL}
+      - key: SENTRY_DSN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SENTRY_DSN}
+      - key: DJANGO_SETTINGS_MODULE
+        scope: RUN_AND_BUILD_TIME
+        value: config.settings.production
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.DATABASE_URL}
+      - key: AMS_BILLING_SERVICE_CLASS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_SERVICE_CLASS}
+      - key: AMS_BILLING_EMAIL_WHITELIST_REGEX
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_EMAIL_WHITELIST_REGEX}
+      - key: AMS_NOTIFY_STAFF_ORGANISATION_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_ORGANISATION_EVENTS }
+      - key: AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS}
+      - key: AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL }
+      - key: DISCOURSE_REDIRECT_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_REDIRECT_DOMAIN}
+      - key: DISCOURSE_CONNECT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_CONNECT_SECRET}
+      - key: DJANGO_MEDIA_PUBLIC_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PUBLIC_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PUBLIC_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_SECRET_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_REGION_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PRIVATE_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_SECRET_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_REGION_NAME}
+      - key: DJANGO_DEFAULT_FROM_EMAIL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_DEFAULT_FROM_EMAIL}
+      - key: DJANGO_EMAIL_SUBJECT_PREFIX
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_EMAIL_SUBJECT_PREFIX}
+      - key: SENTRY_ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: Prod
+      - key: XERO_CLIENT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_ID}
+      - key: XERO_CLIENT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_SECRET}
+      - key: XERO_TENANT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_TENANT_ID}
+      - key: XERO_WEBHOOK_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_WEBHOOK_KEY}
+      - key: XERO_ACCOUNT_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_ACCOUNT_CODE}
+      - key: XERO_AMOUNT_TYPE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_AMOUNT_TYPE}
+      - key: XERO_CURRENCY_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CURRENCY_CODE}
+
+  - name: fetch-invoice-updates
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb-fixed
+    kind: SCHEDULED
+    run_command: python /app/manage.py fetch_invoice_updates
+    schedule:
+      cron: 0 */6 * * *
+      time_zone: Pacific/Auckland
+    timeout: 300s
+    image:
+      digest: ${django_digest}
+      registry: digital-technologies-teachers-aotearoa
+      registry_credentials: ${registry_credentials}
+      registry_type: GHCR
+      repository: ams-django
+    envs:
+      - key: SITE_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SITE_DOMAIN}
+      - key: POSTGRES_HOST
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.HOSTNAME}
+      - key: POSTGRES_PORT
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PORT}
+      - key: POSTGRES_DB
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.DATABASE}
+      - key: POSTGRES_USER
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.USERNAME}
+      - key: POSTGRES_PASSWORD
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PASSWORD}
+      - key: DJANGO_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_SECRET_KEY}
+      - key: DJANGO_ADMIN_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ADMIN_URL}
+      - key: DJANGO_ALLOWED_HOSTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ALLOWED_HOSTS}
+      - key: MAILGUN_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_KEY}
+      - key: MAILGUN_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_DOMAIN}
+      - key: MAILGUN_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_URL}
+      - key: SENTRY_DSN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SENTRY_DSN}
+      - key: DJANGO_SETTINGS_MODULE
+        scope: RUN_AND_BUILD_TIME
+        value: config.settings.production
+      - key: AMS_BILLING_SERVICE_CLASS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_SERVICE_CLASS}
+      - key: AMS_BILLING_EMAIL_WHITELIST_REGEX
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_EMAIL_WHITELIST_REGEX}
+      - key: AMS_NOTIFY_STAFF_ORGANISATION_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_ORGANISATION_EVENTS }
+      - key: AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS}
+      - key: AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL }
+      - key: DISCOURSE_REDIRECT_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_REDIRECT_DOMAIN}
+      - key: DISCOURSE_CONNECT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_CONNECT_SECRET}
+      - key: DJANGO_MEDIA_PUBLIC_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PUBLIC_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PUBLIC_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_SECRET_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_REGION_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PRIVATE_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_SECRET_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_REGION_NAME}
+      - key: DJANGO_DEFAULT_FROM_EMAIL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_DEFAULT_FROM_EMAIL}
+      - key: DJANGO_EMAIL_SUBJECT_PREFIX
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_EMAIL_SUBJECT_PREFIX}
+      - key: SENTRY_ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: dev
+      - key: XERO_CLIENT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_ID}
+      - key: XERO_CLIENT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_SECRET}
+      - key: XERO_TENANT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_TENANT_ID}
+      - key: XERO_WEBHOOK_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_WEBHOOK_KEY}
+      - key: XERO_ACCOUNT_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_ACCOUNT_CODE}
+      - key: XERO_AMOUNT_TYPE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_AMOUNT_TYPE}
+      - key: XERO_CURRENCY_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CURRENCY_CODE}
+
+region: syd
+services:
+  - name: django
+    http_port: 5000
+    image:
+      tag: ${django_tag}
+      registry: digital-technologies-teachers-aotearoa
+      registry_credentials: ${registry_credentials}
+      registry_type: GHCR
+      repository: ams-django
+    instance_count: 2
+    instance_size_slug: apps-s-1vcpu-1gb
+    run_command: /start
+    alerts:
+      - operator: GREATER_THAN
+        rule: CPU_UTILIZATION
+        value: 90
+        window: FIVE_MINUTES
+      - operator: GREATER_THAN
+        rule: MEM_UTILIZATION
+        value: 90
+        window: FIVE_MINUTES
+      - operator: GREATER_THAN
+        rule: RESTART_COUNT
+        value: 2
+        window: FIVE_MINUTES
+    envs:
+      - key: SITE_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SITE_DOMAIN}
+      - key: POSTGRES_HOST
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.HOSTNAME}
+      - key: POSTGRES_PORT
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PORT}
+      - key: POSTGRES_DB
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.DATABASE}
+      - key: POSTGRES_USER
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.USERNAME}
+      - key: POSTGRES_PASSWORD
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.PASSWORD}
+      - key: DJANGO_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_SECRET_KEY}
+      - key: DJANGO_ADMIN_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ADMIN_URL}
+      - key: DJANGO_ALLOWED_HOSTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_ALLOWED_HOSTS}
+      - key: MAILGUN_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_KEY}
+      - key: MAILGUN_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_DOMAIN}
+      - key: MAILGUN_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${MAILGUN_API_URL}
+      - key: SENTRY_DSN
+        scope: RUN_AND_BUILD_TIME
+        value: ${SENTRY_DSN}
+      - key: DJANGO_SETTINGS_MODULE
+        scope: RUN_AND_BUILD_TIME
+        value: config.settings.production
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${db-postgresql.DATABASE_URL}
+      - key: AMS_BILLING_SERVICE_CLASS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_SERVICE_CLASS}
+      - key: AMS_BILLING_EMAIL_WHITELIST_REGEX
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_BILLING_EMAIL_WHITELIST_REGEX}
+      - key: AMS_NOTIFY_STAFF_ORGANISATION_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_ORGANISATION_EVENTS }
+      - key: AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS}
+      - key: AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL }
+      - key: DISCOURSE_REDIRECT_DOMAIN
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_REDIRECT_DOMAIN}
+      - key: DISCOURSE_CONNECT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${DISCOURSE_CONNECT_SECRET}
+      - key: DJANGO_MEDIA_PUBLIC_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PUBLIC_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PUBLIC_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_SECRET_KEY}
+      - key: DJANGO_MEDIA_PUBLIC_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PUBLIC_REGION_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_BUCKET_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_BUCKET_NAME}
+      - key: DJANGO_MEDIA_PRIVATE_ENDPOINT_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ENDPOINT_URL}
+      - key: DJANGO_MEDIA_PRIVATE_ACCESS_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_ACCESS_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_SECRET_KEY}
+      - key: DJANGO_MEDIA_PRIVATE_REGION_NAME
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_MEDIA_PRIVATE_REGION_NAME}
+      - key: DJANGO_DEFAULT_FROM_EMAIL
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_DEFAULT_FROM_EMAIL}
+      - key: DJANGO_EMAIL_SUBJECT_PREFIX
+        scope: RUN_AND_BUILD_TIME
+        value: ${DJANGO_EMAIL_SUBJECT_PREFIX}
+      - key: SENTRY_ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: Prod
+      - key: XERO_CLIENT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_ID}
+      - key: XERO_CLIENT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CLIENT_SECRET}
+      - key: XERO_TENANT_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_TENANT_ID}
+      - key: XERO_WEBHOOK_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_WEBHOOK_KEY}
+      - key: XERO_ACCOUNT_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_ACCOUNT_CODE}
+      - key: XERO_AMOUNT_TYPE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_AMOUNT_TYPE}
+      - key: XERO_CURRENCY_CODE
+        scope: RUN_AND_BUILD_TIME
+        value: ${XERO_CURRENCY_CODE}

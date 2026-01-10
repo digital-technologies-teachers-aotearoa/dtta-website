@@ -12,8 +12,7 @@ Environments are configured with configuration files within an `environments/` d
 The following environments are supported:
 
 - UAT (User acceptance testing) - `environments/uat/`
-
-Production will be added a later stage.
+- Production - `environments/prod/`
 
 ### Environment file configuration
 
@@ -48,6 +47,7 @@ Each environment requires the following:
    - Web Service - Django AMS
    - Job - Django AMS running `python /app/manage.py deploy_steps` before each deployment
 - Database - Postgres
+- Discourse instance (managed or self hosting)
 
 AMS instances require configuration such as expected environment variables, see [AMS Deployment Documentation](https://digital-technologies-teachers-aotearoa.github.io/ams/developer/deployment/#production-environment).
 
