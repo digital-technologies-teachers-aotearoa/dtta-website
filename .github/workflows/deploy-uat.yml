@@ -87,6 +87,11 @@ jobs:
           MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
           registry_credentials: ${{ secrets.REGISTRY_CREDENTIALS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_LOG_LEVEL: ${{ secrets.SENTRY_LOG_LEVEL }}
+          SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
+          SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
+          LOGTAIL_SOURCE_TOKEN: ${{ secrets.LOGTAIL_SOURCE_TOKEN }}
+          LOGTAIL_INGESTING_HOST: ${{ secrets.LOGTAIL_INGESTING_HOST }}
           SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
           XERO_ACCOUNT_CODE: ${{ secrets.XERO_ACCOUNT_CODE }}
           XERO_AMOUNT_TYPE: ${{ secrets.XERO_AMOUNT_TYPE }}
