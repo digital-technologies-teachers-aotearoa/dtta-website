@@ -176,7 +176,7 @@ jobs:
     kind: SCHEDULED
     run_command: python /app/manage.py fetch_invoice_updates
     schedule:
-      cron: 0 */6 * * *
+      cron: "*/15 * * * *"
       time_zone: Pacific/Auckland
     timeout: 300s
     image:
