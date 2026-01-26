@@ -11,7 +11,7 @@ databases:
     production: true
     version: "18"
 domains:
-  - domain: prod.dtta.org.nz
+  - domain: dtta.org.nz
     type: PRIMARY
 features:
   - buildpack-stack=ubuntu-22
