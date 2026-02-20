@@ -1,5 +1,5 @@
 ams:
-  version: 1.1.0
+  version: 1.2.0
   envs:
     AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: true
     AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: true
