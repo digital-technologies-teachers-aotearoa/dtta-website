@@ -26,6 +26,7 @@ The following keys are supported within the `config.yml` file:
 ams:
   version: 1.0.0
   envs:
+    AMS_EVENTS_ENABLED: True
     AMS_NOTIFY_STAFF_MEMBERSHIP_EVENTS: True
     AMS_NOTIFY_STAFF_ORGANISATION_EVENTS: True
     AMS_REQUIRE_FREE_MEMBERSHIP_APPROVAL: False
