@@ -77,6 +77,9 @@ jobs:
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         value: ${db-postgresql.DATABASE_URL}
+      - key: AMS_EVENTS_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_EVENTS_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -229,6 +232,9 @@ jobs:
       - key: DJANGO_SETTINGS_MODULE
         scope: RUN_AND_BUILD_TIME
         value: config.settings.production
+      - key: AMS_EVENTS_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_EVENTS_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -395,6 +401,9 @@ services:
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         value: ${db-postgresql.DATABASE_URL}
+      - key: AMS_EVENTS_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_EVENTS_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
