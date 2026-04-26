@@ -76,6 +76,9 @@ jobs:
       - key: AMS_EVENTS_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_EVENTS_ENABLED}
+      - key: AMS_RESOURCES_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_RESOURCES_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -231,6 +234,9 @@ jobs:
       - key: AMS_EVENTS_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_EVENTS_ENABLED}
+      - key: AMS_RESOURCES_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_RESOURCES_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -387,6 +393,9 @@ services:
       - key: AMS_EVENTS_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_EVENTS_ENABLED}
+      - key: AMS_RESOURCES_ENABLED
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_RESOURCES_ENABLED}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
