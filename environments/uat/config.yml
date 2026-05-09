@@ -1,5 +1,5 @@
 ams:
-  version: 1.5.0
+  version: 1.5.1
   envs:
     AMS_EVENTS_ENABLED: True
     AMS_RESOURCES_ENABLED: True
