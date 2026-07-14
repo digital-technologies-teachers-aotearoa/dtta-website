@@ -83,6 +83,9 @@ jobs:
       - key: AMS_RESOURCES_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_RESOURCES_ENABLED}
+      - key: AMS_ENABLED_LANGUAGES
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_ENABLED_LANGUAGES}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -241,6 +244,9 @@ jobs:
       - key: AMS_RESOURCES_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_RESOURCES_ENABLED}
+      - key: AMS_ENABLED_LANGUAGES
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_ENABLED_LANGUAGES}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
@@ -413,6 +419,9 @@ services:
       - key: AMS_RESOURCES_ENABLED
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_RESOURCES_ENABLED}
+      - key: AMS_ENABLED_LANGUAGES
+        scope: RUN_AND_BUILD_TIME
+        value: ${AMS_ENABLED_LANGUAGES}
       - key: AMS_BILLING_SERVICE_CLASS
         scope: RUN_AND_BUILD_TIME
         value: ${AMS_BILLING_SERVICE_CLASS}
