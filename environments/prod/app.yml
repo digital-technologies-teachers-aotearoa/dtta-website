@@ -35,6 +35,9 @@ jobs:
       registry_type: GHCR
       repository: ams-django
     envs:
+      - key: ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: production
       - key: SITE_DOMAIN
         scope: RUN_AND_BUILD_TIME
         value: ${SITE_DOMAIN}
@@ -182,6 +185,9 @@ jobs:
       - key: LOGTAIL_INGESTING_HOST
         scope: RUN_AND_BUILD_TIME
         value: ${LOGTAIL_INGESTING_HOST}
+      - key: DATA_STORE_CONNECTION_STRING
+        scope: RUN_AND_BUILD_TIME
+        value: ${DATA_STORE_CONNECTION_STRING}
 
   - name: fetch-invoice-updates
     instance_count: 1
@@ -199,6 +205,9 @@ jobs:
       registry_type: GHCR
       repository: ams-django
     envs:
+      - key: ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: production
       - key: SITE_DOMAIN
         scope: RUN_AND_BUILD_TIME
         value: ${SITE_DOMAIN}
@@ -343,6 +352,9 @@ jobs:
       - key: LOGTAIL_INGESTING_HOST
         scope: RUN_AND_BUILD_TIME
         value: ${LOGTAIL_INGESTING_HOST}
+      - key: DATA_STORE_CONNECTION_STRING
+        scope: RUN_AND_BUILD_TIME
+        value: ${DATA_STORE_CONNECTION_STRING}
 
 region: syd
 services:
@@ -371,6 +383,9 @@ services:
         value: 2
         window: FIVE_MINUTES
     envs:
+      - key: ENVIRONMENT
+        scope: RUN_AND_BUILD_TIME
+        value: production
       - key: SITE_DOMAIN
         scope: RUN_AND_BUILD_TIME
         value: ${SITE_DOMAIN}
@@ -518,3 +533,6 @@ services:
       - key: LOGTAIL_INGESTING_HOST
         scope: RUN_AND_BUILD_TIME
         value: ${LOGTAIL_INGESTING_HOST}
+      - key: DATA_STORE_CONNECTION_STRING
+        scope: RUN_AND_BUILD_TIME
+        value: ${DATA_STORE_CONNECTION_STRING}
